@@ -3,7 +3,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+
 public class stackRunner{
 
  
@@ -22,6 +23,7 @@ public stackRunner()
 	stack2 = new Stack<Person>(); //temporary stack
 	removeStack = new Stack<Person>(); // stack to hold people when getting off
 	list = new ArrayList<Person>();
+	
 }
 
 /*
@@ -31,6 +33,23 @@ public stackRunner()
  * put stack2 back into stack 1, print removeStack contents
  */
 
+
+public void resetCheck() {
+	Stack<Person> temp = new Stack<Person>();
+	while(!stack1.isEmpty())
+	{
+		Person p = stack1.pop();
+		p.checked = false;
+		temp.push(p);
+	}
+	while(!temp.isEmpty())
+	{
+		stack1.push(temp.pop());
+	}
+	
+	
+}
+
 public void removeAtFloor()
 {
 	if(needsToGetOff())
@@ -38,9 +57,9 @@ public void removeAtFloor()
     	while(!stack1.isEmpty())
     	{
     		Person p = stack1.pop();
-    		p.setRemoved(p.getRemoved()+1);
     		if(p.getEndLevel() == floor)
     		{
+    			addOnetoPrev();
     			removeStack.push(p); 
     			currentSize--;
     			continue;
@@ -60,6 +79,27 @@ public void removeAtFloor()
     {
        	return;
     }
+	
+}
+
+private void addOnetoPrev() {
+	Stack<Person> temp = new Stack<Person>();
+	while(!stack2.isEmpty())
+	{
+		Person p = stack2.pop();
+		if(!p.checked)
+		{
+			p.setRemoved(p.getRemoved()+1);
+			temp.push(p); p.checked = true;
+		}
+		
+	}
+	
+	while(!temp.isEmpty())
+	{   
+		Person p = temp.pop();
+		stack2.push(p);
+	}
 	
 }
 
@@ -86,11 +126,13 @@ private void printRemoved()
 	if(removeStack.isEmpty()) return;
 	else
 	{
+		System.out.println("Current floor: " + floor);
 		while(!removeStack.isEmpty())
 		{
 			Person p = removeStack.pop();
 			int i = p.getRemoved();
-			System.out.println(p.getName() + " got off: "+(i-1) + " times");
+			if(p.checked) i--;
+			System.out.println(p.getName() + " got off: "+(i) + " times");
 			
 		}
 		if(currentSize == 5)
@@ -172,6 +214,7 @@ public void addToStack()
 	
 }
 
+
 /*
  * checks if any person has to get off at a certain floor
  * goes through stack1, empties to stack2, when a person is found to have
@@ -249,6 +292,8 @@ public ArrayList<Person> readIn(String filename)
 	return p;
 }
 
+
+
 public static void main(String[] args)
 {
 	
@@ -258,7 +303,7 @@ public static void main(String[] args)
 	s.addToStack();
 	boolean up = true, down=true;
 	int i=0, big=s.list.size();
-	while(s.go())
+	while(s.go() && !s.stack1.isEmpty())
 	{
 		i++;
 		if(s.floor == 1 )
@@ -272,24 +317,29 @@ public static void main(String[] args)
 			up = false; 
 		}
 		s.removeAtFloor();
+		s.resetCheck();
     	if(up) s.floor++;
 		else s.floor--;
        	s.addToStack(); 
              	
 	}
 	
-	if(!s.stack1.isEmpty())
-	{
-		while(!s.stack1.isEmpty())
-		{
-			System.out.println(s.stack1.pop().getName());
-		}
-	}
-
-	System.out.println("terminating program");
+//	if(!s.stack1.isEmpty())
+//	{
+//		while(!s.stack1.isEmpty())
+//		{
+//			Person p = s.stack1.pop();
+//			int t = p.getRemoved();
+//			System.out.println(p.getName() + " got off: "+(t-1) + " times");
+//		}
+//	}
+    
+	System.out.println(" \n \n terminating program");
 	System.exit(0);	
 	
 }
+
+
 
 
 

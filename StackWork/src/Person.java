@@ -2,7 +2,7 @@ public class Person{
 	
     private String name;
     private int startLevel, endLevel, removed;
-    boolean off;
+    boolean off, checked;
     // person has name, start level, end level,
     // and boolean off, meaning he has gotten off the list and
     // on the elevator
@@ -12,6 +12,7 @@ public class Person{
 		this.setEndLevel(endLevel);
 		setRemoved(getRemoved() + 1);
 		off=false;
+		checked = false;
 
 	}
 
